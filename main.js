@@ -30,9 +30,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const visualizer = new PoseVisualizer(canvas);
     visualizer.resize();
     
-    // Make sure visualizer is set to sprite mode initially
-    visualizer.visualizationMode = 'sprite';
-    vizModeLabel.textContent = 'Mode: Sprite';
+    visualizer.visualizationMode = 'skeleton';
+    vizModeLabel.textContent = 'Mode: Skeleton';
     
     // Handle window resize
     window.addEventListener('resize', () => {
