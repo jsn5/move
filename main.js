@@ -149,7 +149,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 loadingText.textContent = 'Seed sequence loaded!';
             } else {
                 // If no seed sequence is available, use a default one
-                // This is a placeholder - in a real app, you'd need actual pose data
                 console.warn('No seed sequence found, using default');
                 
                 // Create a placeholder sequence with the right dimensions
