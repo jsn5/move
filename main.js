@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Visualization modes - use only the modes available in visualize.js
     const visualizationModes = ['skeleton', 'sprite'];
-    let currentModeIndex = 1; // Start with sprite mode (index 1)
+    let currentModeIndex = 0; // Start with sprite mode (index 1)
     
     // Initialize pose visualizer
     const visualizer = new PoseVisualizer(canvas);
