@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const stopBtn = document.getElementById('stop-btn');
     const vizModeBtn = document.getElementById('viz-mode-btn');
     const vizModeLabel = document.getElementById('viz-mode-label');
+    const vizControlsGroup = document.querySelector('.vis-controls');
     const temperatureSlider = document.getElementById('temperature');
     const temperatureValue = document.getElementById('temperature-value');
     const loadingContainer = document.querySelector('.loading-container');
@@ -22,16 +23,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     let poseHistory = []; // Store recent poses for smoothing
     const MAX_HISTORY = 5; // Number of poses to keep for smoothing
     
-    // Visualization modes - use only the modes available in visualize.js
-    const visualizationModes = ['skeleton', 'sprite'];
-    let currentModeIndex = 0; // Start with sprite mode (index 1)
+    // Hide visualization controls since we're using only Glow Motion
+    vizControlsGroup.style.display = 'none';
     
     // Initialize pose visualizer
     const visualizer = new PoseVisualizer(canvas);
     visualizer.resize();
-    
-    visualizer.visualizationMode = 'skeleton';
-    vizModeLabel.textContent = 'Mode: Skeleton';
     
     // Handle window resize
     window.addEventListener('resize', () => {
@@ -44,24 +41,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Update temperature value display
     temperatureSlider.addEventListener('input', () => {
         temperatureValue.textContent = temperatureSlider.value;
-    });
-    
-    // Toggle visualization mode button
-    vizModeBtn.addEventListener('click', () => {
-        // Simple toggle between the two available modes
-        currentModeIndex = (currentModeIndex + 1) % visualizationModes.length;
-        const newMode = visualizationModes[currentModeIndex];
-        
-        // Set the mode and update the display
-        visualizer.visualizationMode = newMode;
-        vizModeLabel.textContent = `Mode: ${newMode.charAt(0).toUpperCase() + newMode.slice(1)}`;
-        
-        console.log("Changed visualization mode to:", newMode); // Debug log
-        
-        // Redraw current pose with new visualization mode
-        if (currentSequence) {
-            visualizer.drawPose(currentSequence);
-        }
     });
     
     // Generate button
@@ -256,7 +235,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
                 // Weight based on recency (more recent = higher weight)
                 // This creates a simple exponential moving average
-                const weight = 0.6 * Math.pow(0.5, j);
+                // Use lower smoothing value (0.4) for faster movements
+                const weight = 0.4 * Math.pow(0.5, j);
                 
                 // Apply weighted average
                 smoothedX = smoothedX * (1 - weight) + historicalPose[i][0] * weight;
@@ -295,7 +275,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const sigma = results.sigma.data;
             
             // Sample from the mixture model
-            const temperature = parseFloat(temperatureSlider.value);
+            const temperature = parseFloat(temperatureSlider.value) * 1.0; // Increase temperature for more dynamic movement
             const nextPose = sampleFromMixture(
                 pi, 
                 mu, 
@@ -329,7 +309,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             setTimeout(() => {
                 // Schedule the next generation step
                 animationFrameId = requestAnimationFrame(() => runGenerationStep(inputSequence));
-            }, 30); // 30ms delay helps reduce jitter while maintaining responsiveness
+            }, 20); // Faster delay for smoother animation (20ms instead of 30ms)
         } catch (error) {
             console.error('Generation error:', error);
             stopGeneration();
